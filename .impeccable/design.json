@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-02T10:39:31Z",
+  "title": "Design System: Downlink",
+  "extensions": {
+    "colorMeta": {
+      "navy-ink": {
+        "role": "primary",
+        "displayName": "Navy Instrument Ink",
+        "canonical": "#0c2747",
+        "tonalRamp": [
+          "oklch(15% 0.068 254.6)",
+          "oklch(26% 0.068 254.6)",
+          "oklch(38% 0.068 254.6)",
+          "oklch(50% 0.068 254.6)",
+          "oklch(62% 0.068 254.6)",
+          "oklch(74% 0.068 254.6)",
+          "oklch(86% 0.068 254.6)",
+          "oklch(95% 0.068 254.6)"
+        ]
+      },
+      "muted-navy": {
+        "role": "neutral",
+        "displayName": "Muted Navy",
+        "canonical": "#61778b",
+        "tonalRamp": [
+          "oklch(15% 0.041 246.0)",
+          "oklch(26% 0.041 246.0)",
+          "oklch(38% 0.041 246.0)",
+          "oklch(50% 0.041 246.0)",
+          "oklch(62% 0.041 246.0)",
+          "oklch(74% 0.041 246.0)",
+          "oklch(86% 0.041 246.0)",
+          "oklch(95% 0.041 246.0)"
+        ]
+      },
+      "chart-hairline": {
+        "role": "neutral",
+        "displayName": "Chart Hairline",
+        "canonical": "#ccd6da",
+        "tonalRamp": [
+          "oklch(15% 0.012 223.5)",
+          "oklch(26% 0.012 223.5)",
+          "oklch(38% 0.012 223.5)",
+          "oklch(50% 0.012 223.5)",
+          "oklch(62% 0.012 223.5)",
+          "oklch(74% 0.012 223.5)",
+          "oklch(86% 0.012 223.5)",
+          "oklch(95% 0.012 223.5)"
+        ]
+      },
+      "ledger-paper": {
+        "role": "neutral",
+        "displayName": "Ledger Paper",
+        "canonical": "#faf9f4",
+        "tonalRamp": [
+          "oklch(15% 0.007 97.4)",
+          "oklch(26% 0.007 97.4)",
+          "oklch(38% 0.007 97.4)",
+          "oklch(50% 0.007 97.4)",
+          "oklch(62% 0.007 97.4)",
+          "oklch(74% 0.007 97.4)",
+          "oklch(86% 0.007 97.4)",
+          "oklch(95% 0.007 97.4)"
+        ]
+      },
+      "mineral-sea": {
+        "role": "tertiary",
+        "displayName": "Mineral Sea",
+        "canonical": "#d9edf5",
+        "tonalRamp": [
+          "oklch(15% 0.024 223.7)",
+          "oklch(26% 0.024 223.7)",
+          "oklch(38% 0.024 223.7)",
+          "oklch(50% 0.024 223.7)",
+          "oklch(62% 0.024 223.7)",
+          "oklch(74% 0.024 223.7)",
+          "oklch(86% 0.024 223.7)",
+          "oklch(95% 0.024 223.7)"
+        ]
+      },
+      "chalk-land": {
+        "role": "tertiary",
+        "displayName": "Chalk Land",
+        "canonical": "#f4f1e8",
+        "tonalRamp": [
+          "oklch(15% 0.012 91.5)",
+          "oklch(26% 0.012 91.5)",
+          "oklch(38% 0.012 91.5)",
+          "oklch(50% 0.012 91.5)",
+          "oklch(62% 0.012 91.5)",
+          "oklch(74% 0.012 91.5)",
+          "oklch(86% 0.012 91.5)",
+          "oklch(95% 0.012 91.5)"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(86% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "route-vermilion": {
+        "role": "secondary",
+        "displayName": "Route Vermilion",
+        "canonical": "#ed542d",
+        "tonalRamp": [
+          "oklch(15% 0.196 35.1)",
+          "oklch(26% 0.196 35.1)",
+          "oklch(38% 0.196 35.1)",
+          "oklch(50% 0.196 35.1)",
+          "oklch(62% 0.196 35.1)",
+          "oklch(74% 0.196 35.1)",
+          "oklch(86% 0.196 35.1)",
+          "oklch(95% 0.196 35.1)"
+        ]
+      },
+      "route-cobalt": {
+        "role": "secondary",
+        "displayName": "Route Cobalt",
+        "canonical": "#1769d2",
+        "tonalRamp": [
+          "oklch(15% 0.179 257.5)",
+          "oklch(26% 0.179 257.5)",
+          "oklch(38% 0.179 257.5)",
+          "oklch(50% 0.179 257.5)",
+          "oklch(62% 0.179 257.5)",
+          "oklch(74% 0.179 257.5)",
+          "oklch(86% 0.179 257.5)",
+          "oklch(95% 0.179 257.5)"
+        ]
+      },
+      "route-sea-green": {
+        "role": "secondary",
+        "displayName": "Route Sea Green",
+        "canonical": "#07966d",
+        "tonalRamp": [
+          "oklch(15% 0.124 165.3)",
+          "oklch(26% 0.124 165.3)",
+          "oklch(38% 0.124 165.3)",
+          "oklch(50% 0.124 165.3)",
+          "oklch(62% 0.124 165.3)",
+          "oklch(74% 0.124 165.3)",
+          "oklch(86% 0.124 165.3)",
+          "oklch(95% 0.124 165.3)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Brand lockup and primary identity, set in the locally bundled Barlow Condensed Semibold face."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Route-group headings and candidate cable names."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Controls, instructions, route metadata, and explanatory copy."
+      },
+      "label": {
+        "displayName": "Instrument Label",
+        "purpose": "Map annotations and telemetry-like status text."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ledger-separation",
+        "value": "14px 0 38px rgba(0, 0, 0, 0.09)",
+        "purpose": "Separates the fixed planning ledger from the map."
+      },
+      {
+        "name": "action-lift",
+        "value": "0 5px 14px rgba(0, 0, 0, 0.14)",
+        "purpose": "Lifts the primary trace action from the ledger."
+      },
+      {
+        "name": "map-control-lift",
+        "value": "0 5px 18px rgba(0, 0, 0, 0.14)",
+        "purpose": "Keeps map controls distinct from the geography."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-fast",
+        "value": "140ms ease",
+        "purpose": "Hover, press, opacity, and short translation feedback on ledger controls."
+      },
+      {
+        "name": "map-refit",
+        "value": "600ms",
+        "purpose": "Camera transition when fitting a route or returning to live view."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "ledger-sheet",
+        "value": "1080px"
+      },
+      {
+        "name": "compact-sheet",
+        "value": "540px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Trace Action",
+      "kind": "button",
+      "refersTo": "trace-action",
+      "description": "Primary full-width action for resolving the selected city pair.",
+      "html": "<button class=\"ds-trace-action\"><svg viewBox=\"0 0 24 24\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"5\" cy=\"17\" r=\"2.5\" stroke=\"currentColor\" stroke-width=\"1.8\"/><circle cx=\"19\" cy=\"7\" r=\"2.5\" stroke=\"currentColor\" stroke-width=\"1.8\"/><path d=\"M7.2 15.6 16.8 8.4\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg>Trace route</button>",
+      "css": ".ds-trace-action { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:50px; padding:12px 16px; color:#fff; background:var(--ink); border:1px solid var(--ink); border-radius:8px; font:800 14px/1.55 Avenir,\"Avenir Next\",Futura,ui-sans-serif,sans-serif; letter-spacing:.02em; cursor:pointer; box-shadow:0 5px 14px rgba(0,0,0,.14); transition:transform 140ms ease,background 140ms ease; } .ds-trace-action svg { width:18px; height:18px; } .ds-trace-action:hover { background:#163d68; transform:translateY(-1px); } .ds-trace-action:active { transform:translateY(0); } .ds-trace-action:focus-visible { outline:3px solid #1769d2; outline-offset:3px; } .ds-trace-action:disabled { opacity:.55; cursor:wait; transform:none; }"
+    },
+    {
+      "name": "City Select",
+      "kind": "input",
+      "refersTo": "city-select",
+      "description": "Native city picker with a compact instrument label and large target.",
+      "html": "<label class=\"ds-city-field\">From<select><option>Tempe, AZ</option><option>London, UK</option></select></label>",
+      "css": ".ds-city-field { color:#405b72; font:800 10px/1.2 Avenir,\"Avenir Next\",Futura,ui-sans-serif,sans-serif; letter-spacing:.13em; text-transform:uppercase; } .ds-city-field select { display:block; width:100%; height:48px; margin-top:8px; padding:0 36px 0 13px; color:var(--ink); background:#fff; border:1px solid #aebfc7; border-radius:8px; font:400 14px/1.55 Avenir,\"Avenir Next\",Futura,ui-sans-serif,sans-serif; cursor:pointer; } .ds-city-field select:hover { border-color:#718a98; } .ds-city-field select:focus-visible { outline:3px solid #1769d2; outline-offset:3px; }"
+    },
+    {
+      "name": "Text Action",
+      "kind": "button",
+      "description": "Quiet underlined action for mode changes and map fitting.",
+      "html": "<button class=\"ds-text-action\">Fit map</button>",
+      "css": ".ds-text-action { padding:0; color:#315878; background:none; border:0; font:400 12px/1.4 Avenir,\"Avenir Next\",Futura,ui-sans-serif,sans-serif; text-decoration:underline; text-underline-offset:3px; cursor:pointer; } .ds-text-action:hover { color:var(--ink); } .ds-text-action:focus-visible { outline:3px solid #1769d2; outline-offset:3px; }"
+    },
+    {
+      "name": "Route Choice",
+      "kind": "card",
+      "refersTo": "route-choice",
+      "description": "Numbered candidate card whose accent stays tied to route order.",
+      "html": "<button class=\"ds-route-choice is-selected\" aria-pressed=\"true\"><span class=\"ds-route-number\">1</span><span class=\"ds-route-body\"><span class=\"ds-route-kicker\">ROUTE 1 <small>SELECTED</small></span><strong>Aurora + Tata TGN-Atlantic South</strong><span class=\"ds-route-metrics\">9,418 km · ~92 ms RTT</span></span></button>",
+      "css": ".ds-route-choice { --route-color:#ed542d; display:grid; grid-template-columns:58px minmax(0,1fr); gap:14px; width:100%; min-height:92px; padding:0 15px 0 0; overflow:hidden; color:var(--ink); background:rgba(255,255,255,.58); border:1px solid #bac8ce; border-radius:9px; text-align:left; cursor:pointer; opacity:.8; transition:opacity 140ms ease,transform 140ms ease,box-shadow 140ms ease; } .ds-route-choice:hover { opacity:1; transform:translateX(2px); } .ds-route-choice:focus-visible { outline:3px solid #1769d2; outline-offset:3px; } .ds-route-choice.is-selected { opacity:1; border-color:var(--route-color); background:#fff; } .ds-route-number { align-self:stretch; display:grid; place-items:center; color:#fff; background:var(--route-color); font:800 28px/1 Avenir,\"Avenir Next\",Futura,ui-sans-serif,sans-serif; font-variant-numeric:tabular-nums; } .ds-route-body { align-self:center; min-width:0; padding:12px 0; } .ds-route-kicker { display:flex; justify-content:space-between; color:var(--route-color); font:800 10px/1.2 Avenir,\"Avenir Next\",Futura,ui-sans-serif,sans-serif; letter-spacing:.12em; } .ds-route-kicker small { font-size:9px; letter-spacing:.08em; } .ds-route-body strong { display:block; margin-top:5px; font:600 17px/1.18 \"Downlink Display\",ui-sans-serif,sans-serif; } .ds-route-metrics { display:block; margin-top:8px; color:var(--muted); font:400 11px/1.3 Avenir,\"Avenir Next\",Futura,ui-sans-serif,sans-serif; }"
+    },
+    {
+      "name": "Infrastructure Legend",
+      "kind": "custom",
+      "description": "Text-first key distinguishing mapped submarine spans from modeled terrestrial connections.",
+      "html": "<div class=\"ds-infrastructure-legend\"><div><span class=\"ds-legend-stroke\"></span>Mapped submarine cable</div><div><span class=\"ds-legend-stroke is-dashed\"></span>Modeled terrestrial connection</div></div>",
+      "css": ".ds-infrastructure-legend { display:grid; gap:10px; color:#334f67; font:400 11px/1.4 Avenir,\"Avenir Next\",Futura,ui-sans-serif,sans-serif; } .ds-infrastructure-legend div { display:flex; align-items:center; gap:11px; } .ds-legend-stroke { display:inline-block; flex:none; width:40px; height:0; border-top:3px solid var(--ink); } .ds-legend-stroke.is-dashed { border-top-style:dashed; }"
+    },
+    {
+      "name": "Map Route Badge",
+      "kind": "chip",
+      "refersTo": "route-badge",
+      "description": "Color-keyed map marker that grows only for the selected candidate.",
+      "html": "<span class=\"ds-route-badge is-selected\">1</span>",
+      "css": ".ds-route-badge { --route-color:#ed542d; display:grid; place-items:center; width:24px; height:24px; color:#fff; background:var(--route-color); border:2px solid rgba(250,249,244,.96); border-radius:6px; box-shadow:0 2px 7px rgba(0,0,0,.2); font:800 11px/1 ui-sans-serif,sans-serif; opacity:.8; } .ds-route-badge.is-selected { width:29px; height:29px; font-size:13px; opacity:1; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cable-Laying Chart Table",
+    "overview": "Downlink is a pale working chart: mineral-blue water, chalk land, navy instrument ink, and fine rules make route evidence feel plotted rather than decorated. The interface is restrained, technical, and daylight-legible, with the comparison ledger and geography reading as one continuous work surface.\n\nColor carries meaning instead of atmosphere. Three stable route marks keep alternatives comparable, solid and dashed geometry separates mapped submarine infrastructure from modeled land connections, and motion belongs only to the selected signal.",
+    "keyCharacteristics": [
+      "Light nautical chart palette with high-contrast navy notation",
+      "Condensed display type paired with plain controls and monospaced map annotations",
+      "Fixed planning ledger beside a dominant interactive map",
+      "Persistent candidate context with selected-only motion"
+    ],
+    "rules": [
+      {
+        "name": "The Route Identity Rule",
+        "body": "Candidate order owns the vermilion, cobalt, and sea-green sequence everywhere; do not reuse those colors as interchangeable decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Instrument Type Rule",
+        "body": "Use Barlow Condensed for identity and route naming, ordinary sans-serif for operation, and monospace only where text behaves like map or telemetry notation.",
+        "section": "typography"
+      },
+      {
+        "name": "The Structural Depth Rule",
+        "body": "Shadows may separate working layers or protect controls from the map; they do not turn the ledger into a pile of floating cards.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep the map visually dominant and the route ledger contiguous with the viewport edge.",
+      "Do preserve candidate color by route order across cards, badges, paths, landings, and animation.",
+      "Do pair every infrastructure line style with explicit text and keep inference language visible.",
+      "Do honor reduced motion and preserve visible keyboard focus."
+    ],
+    "donts": [
+      "Don't convert the light chart table into a dark monitoring dashboard or a pile of floating glass cards.",
+      "Don't animate inactive routes or hide alternatives when one route is selected.",
+      "Don't imply that modeled terrestrial paths, candidate cables, or latency floors are measured packet routes.",
+      "Don't add geographic labels until they come from a verified local dataset."
+    ]
+  }
+}

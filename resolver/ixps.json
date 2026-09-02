@@ -1,0 +1,33 @@
+{
+  "_note": "Major internet exchange points, used as metro anchor nodes so that inland cities have a graph entry point. Coordinates are city-centre approximations, NOT facility locations -- they anchor a metro, they do not claim a street address.",
+  "ixps": [
+    {"id": "ix-ashburn",      "name": "Equinix Ashburn",   "lat": 39.04,  "lon": -77.49},
+    {"id": "ix-nyc",          "name": "DE-CIX New York",   "lat": 40.71,  "lon": -74.01},
+    {"id": "ix-chicago",      "name": "Equinix Chicago",   "lat": 41.88,  "lon": -87.63},
+    {"id": "ix-dallas",       "name": "Equinix Dallas",    "lat": 32.78,  "lon": -96.80},
+    {"id": "ix-miami",        "name": "NAP of the Americas","lat": 25.77, "lon": -80.19},
+    {"id": "ix-losangeles",   "name": "Any2 Los Angeles",  "lat": 34.05,  "lon": -118.24},
+    {"id": "ix-sanjose",      "name": "SFMIX Bay Area",    "lat": 37.34,  "lon": -121.89},
+    {"id": "ix-seattle",      "name": "SIX Seattle",       "lat": 47.61,  "lon": -122.33},
+    {"id": "ix-denver",       "name": "Any2 Denver",       "lat": 39.74,  "lon": -104.99},
+    {"id": "ix-phoenix",      "name": "Phoenix IX",        "lat": 33.45,  "lon": -112.07},
+    {"id": "ix-toronto",      "name": "TorIX Toronto",     "lat": 43.65,  "lon": -79.38},
+    {"id": "ix-london",       "name": "LINX London",       "lat": 51.51,  "lon": -0.13},
+    {"id": "ix-amsterdam",    "name": "AMS-IX Amsterdam",  "lat": 52.37,  "lon": 4.90},
+    {"id": "ix-frankfurt",    "name": "DE-CIX Frankfurt",  "lat": 50.11,  "lon": 8.68},
+    {"id": "ix-paris",        "name": "France-IX Paris",   "lat": 48.86,  "lon": 2.35},
+    {"id": "ix-madrid",       "name": "ESPANIX Madrid",    "lat": 40.42,  "lon": -3.70},
+    {"id": "ix-milan",        "name": "MIX Milan",         "lat": 45.46,  "lon": 9.19},
+    {"id": "ix-moscow",       "name": "MSK-IX Moscow",     "lat": 55.75,  "lon": 37.62},
+    {"id": "ix-saopaulo",     "name": "IX.br Sao Paulo",   "lat": -23.55, "lon": -46.63},
+    {"id": "ix-johannesburg", "name": "NAPAfrica Jo'burg", "lat": -26.20, "lon": 28.05},
+    {"id": "ix-nairobi",      "name": "KIXP Nairobi",      "lat": -1.29,  "lon": 36.82},
+    {"id": "ix-dubai",        "name": "UAE-IX Dubai",      "lat": 25.20,  "lon": 55.27},
+    {"id": "ix-mumbai",       "name": "NIXI Mumbai",       "lat": 19.08,  "lon": 72.88},
+    {"id": "ix-singapore",    "name": "SGIX Singapore",    "lat": 1.35,   "lon": 103.82},
+    {"id": "ix-hongkong",     "name": "HKIX Hong Kong",    "lat": 22.32,  "lon": 114.17},
+    {"id": "ix-tokyo",        "name": "JPIX Tokyo",        "lat": 35.68,  "lon": 139.69},
+    {"id": "ix-seoul",        "name": "KINX Seoul",        "lat": 37.57,  "lon": 126.98},
+    {"id": "ix-sydney",       "name": "IX Australia SYD",  "lat": -33.87, "lon": 151.21}
+  ]
+}

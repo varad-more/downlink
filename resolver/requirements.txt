@@ -1,0 +1,4 @@
+psycopg[binary]==3.2.3
+# Only needed once you supply a real MaxMind GeoLite2 database; the resolver
+# imports it lazily so the fixture path has no dependency on it.
+geoip2==4.8.0

@@ -1,0 +1,12 @@
+{
+  "approved": true,
+  "approvedAt": "2026-09-02",
+  "direction": "C — split workspace",
+  "history": [
+    {
+      "date": "2026-09-02",
+      "event": "approved",
+      "notes": "User approved composition C with persistent route colors and solid/dashed infrastructure styling."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "_note": "SYNTHETIC fixture for the Phase 2 gate. The RTTs are made up and the coordinates are assigned by hand, not looked up -- this file stands in for MaxMind GeoLite2 so the gate runs with no account, no licence key and no network. It is not a claim about where any of these addresses actually is. Documentation ranges (TEST-NET-1/2/3) are used where a plausible address was needed.",
+  "_calibration": "Tokyo and Singapore RTTs were originally 118/210 ms. The resolver rejected both as exceeding the speed-of-light budget, and it was right: 118 ms allows 12036 km one-way for a 9320 km great circle, i.e. a 1.29x route allowance, when real fibre runs 1.5-2x. They were raised to physically plausible values. Sydney is deliberately LEFT at 178 ms so the exceeds-light-budget branch stays covered by the gate.",
+  "_home": "Tempe, AZ 33.4255,-111.9400 (DOWNLINK_HOME_LAT/LON)",
+  "destinations": [
+    {"ip": "1.1.1.1",         "rtt_ms": 12,  "lat": -33.87, "lon": 151.21,  "city": "Sydney, AU",        "expect": "pop"},
+    {"ip": "8.8.8.8",         "rtt_ms": 22,  "lat": 37.39,  "lon": -122.08, "city": "Mountain View, CA"},
+    {"ip": "151.101.1.140",   "rtt_ms": 18,  "lat": 37.34,  "lon": -121.89, "city": "San Jose, CA"},
+    {"ip": "13.107.42.14",    "rtt_ms": 38,  "lat": 47.67,  "lon": -122.12, "city": "Redmond, WA"},
+    {"ip": "104.244.42.1",    "rtt_ms": 62,  "lat": 33.75,  "lon": -84.39,  "city": "Atlanta, GA"},
+    {"ip": "93.184.216.34",   "rtt_ms": 16,  "lat": 34.05,  "lon": -118.24, "city": "Los Angeles, CA"},
+    {"ip": "185.199.108.153", "rtt_ms": 145, "lat": 52.37,  "lon": 4.90,    "city": "Amsterdam, NL"},
+    {"ip": "212.58.244.22",   "rtt_ms": 152, "lat": 51.51,  "lon": -0.13,   "city": "London, UK"},
+    {"ip": "203.0.113.7",     "rtt_ms": 135, "lat": 35.68,  "lon": 139.69,  "city": "Tokyo, JP"},
+    {"ip": "198.51.100.9",    "rtt_ms": 235, "lat": 1.35,   "lon": 103.82,  "city": "Singapore, SG"},
+    {"ip": "200.160.2.3",     "rtt_ms": 168, "lat": -23.55, "lon": -46.63,  "city": "Sao Paulo, BR"},
+    {"ip": "41.79.72.1",      "rtt_ms": 265, "lat": -26.20, "lon": 28.05,   "city": "Johannesburg, ZA"},
+    {"ip": "202.12.27.33",    "rtt_ms": 178, "lat": -33.87, "lon": 151.21,  "city": "Sydney, AU",        "expect": "greatcircle"},
+    {"ip": "91.198.174.192",  "rtt_ms": 142, "lat": 52.37,  "lon": 4.90,    "city": "Amsterdam, NL"},
+    {"ip": "5.45.58.1",       "rtt_ms": 195, "lat": 55.75,  "lon": 37.62,   "city": "Moscow, RU"},
+    {"ip": "196.216.2.1",     "rtt_ms": 288, "lat": -1.29,  "lon": 36.82,   "city": "Nairobi, KE"},
+    {"ip": "103.21.244.1",    "rtt_ms": 240, "lat": 19.08,  "lon": 72.88,   "city": "Mumbai, IN"},
+    {"ip": "45.33.32.156",    "rtt_ms": 34,  "lat": 32.78,  "lon": -96.80,  "city": "Dallas, TX"},
+    {"ip": "23.235.33.229",   "rtt_ms": 55,  "lat": 41.88,  "lon": -87.63,  "city": "Chicago, IL"},
+    {"ip": "192.0.2.55",      "rtt_ms": 300, "lat": 43.24,  "lon": 76.89,   "city": "Almaty, KZ",        "expect": "greatcircle"}
+  ]
+}

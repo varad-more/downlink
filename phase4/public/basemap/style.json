@@ -1,0 +1,30 @@
+{
+  "version": 8,
+  "name": "downlink-chart",
+  "sources": {
+    "land": { "type": "geojson", "data": "basemap/ne_110m_land.geojson" },
+    "grid": { "type": "geojson", "data": "basemap/graticule.geojson" }
+  },
+  "layers": [
+    { "id": "sea", "type": "background",
+      "paint": { "background-color": "#d9edf5" } },
+
+    { "id": "grid", "type": "line", "source": "grid",
+      "paint": { "line-color": "#8eb9c8", "line-width": 0.55, "line-opacity": 0.42 } },
+
+    { "id": "land", "type": "fill", "source": "land",
+      "paint": { "fill-color": "#f4f1e8" } },
+
+    { "id": "coast-casing", "type": "line", "source": "land",
+      "paint": {
+        "line-color": "#ffffff",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 1.8, 4, 3.2],
+        "line-opacity": 0.6 } },
+
+    { "id": "coast", "type": "line", "source": "land",
+      "paint": {
+        "line-color": "#91a9b2",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.75, 4, 1.25],
+        "line-opacity": 0.92 } }
+  ]
+}

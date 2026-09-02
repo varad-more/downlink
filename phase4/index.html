@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f8f6ef" />
+    <title>Downlink — trace the physical path</title>
+    <style>
+      @font-face {
+        font-family: "Downlink Display";
+        src: url("./fonts/barlow-condensed-semibold.ttf") format("truetype");
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+      }
+      :root {
+        --ink: #0c2747;
+        --muted: #61778b;
+        --hairline: #ccd6da;
+        --paper: #faf9f4;
+        --sea: #d9edf5;
+        --panel-width: 32vw;
+        color-scheme: light;
+        font-family: Avenir, "Avenir Next", Futura, ui-sans-serif, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body, #root { margin: 0; height: 100%; overflow: hidden; }
+      body { color: var(--ink); background: var(--sea); }
+      button, select { font: inherit; }
+      button { -webkit-tap-highlight-color: transparent; }
+      body.calibrating { cursor: crosshair; }
+
+      .trace-panel {
+        position: fixed; z-index: 40; inset: 0 auto 0 0;
+        display: flex; flex-direction: column;
+        width: var(--panel-width); overflow: auto;
+        padding: clamp(24px, 3vw, 42px) clamp(22px, 2.5vw, 36px) 24px;
+        background: rgba(250, 249, 244, .98);
+        border-right: 1px solid rgba(12, 39, 71, .2);
+        box-shadow: 14px 0 38px rgba(0, 0, 0, .09);
+      }
+      .brand-row, .brand-lockup, .result-heading, .route-card-top,
+      .route-metrics { display: flex; align-items: center; }
+      .brand-row { justify-content: space-between; gap: 20px; }
+      .brand-lockup { gap: 14px; min-width: 0; }
+      .brand-mark { flex: none; width: 44px; height: 44px; overflow: visible; }
+      .brand-mark path { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; }
+      .brand-lockup h1 {
+        margin: 0; font-size: clamp(22px, 2.15vw, 32px); line-height: 1;
+        font-family: "Downlink Display", ui-sans-serif, sans-serif;
+        font-weight: 600; letter-spacing: .13em; text-transform: uppercase;
+      }
+      .brand-lockup p { margin: 7px 0 0; color: #46627b; font-size: 14px; }
+      .text-button, .fit-button, .swap {
+        padding: 0; color: #315878; background: none; border: 0; cursor: pointer;
+      }
+      .text-button, .fit-button { text-decoration: underline; text-underline-offset: 3px; }
+      .text-button { flex: none; font-size: 12px; }
+
+      .workspace-tabs {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
+        margin-top: 24px; padding: 3px; background: #e6eceb; border-radius: 10px;
+      }
+      .workspace-tabs button {
+        min-height: 38px; padding: 7px 8px; color: #526a7b; background: transparent;
+        border: 0; border-radius: 7px; font-size: 11px; font-weight: 750; cursor: pointer;
+      }
+      .workspace-tabs button:hover { color: var(--ink); }
+      .workspace-tabs button.active {
+        color: var(--ink); background: #fff; box-shadow: 0 2px 7px rgba(0, 0, 0, .1);
+      }
+      #routes-panel { display: flex; flex: 1; flex-direction: column; }
+
+      .trace-form { margin-top: 30px; padding-bottom: 24px; border-bottom: 1px solid var(--hairline); }
+      .city-fields { display: grid; grid-template-columns: 1fr; gap: 10px; }
+      .city-fields label {
+        color: #405b72; font-size: 10px; font-weight: 800;
+        letter-spacing: .13em; text-transform: uppercase;
+      }
+      .city-fields select {
+        display: block; width: 100%; height: 48px; margin-top: 8px;
+        padding: 0 36px 0 13px; color: var(--ink); background-color: #fff;
+        border: 1px solid #aebfc7; border-radius: 8px; cursor: pointer;
+      }
+      .city-fields select:hover { border-color: #718a98; }
+      .swap {
+        justify-self: end; display: flex; align-items: center; gap: 6px;
+        min-height: 30px; font-size: 11px;
+      }
+      .button-icon { width: 18px; height: 18px; flex: none; }
+      .trace-button {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; min-height: 50px; margin-top: 14px; padding: 12px 16px;
+        color: #fff; background: var(--ink); border: 1px solid var(--ink);
+        border-radius: 8px; font-weight: 800; letter-spacing: .02em; cursor: pointer;
+        box-shadow: 0 5px 14px rgba(0, 0, 0, .14);
+        transition: transform 140ms ease, background 140ms ease;
+      }
+      .trace-button:hover { background: #163d68; transform: translateY(-1px); }
+      .trace-button:active { transform: translateY(0); }
+      .trace-button:disabled { opacity: .55; cursor: wait; transform: none; }
+      .trace-panel button:focus-visible, .trace-panel select:focus-visible,
+      .trace-panel input:focus-visible, .trace-panel a:focus-visible,
+      body .maplibregl-ctrl-group button:focus-visible {
+        outline: 3px solid #1769d2; outline-offset: 3px;
+      }
+      .trace-error, .trace-warning {
+        margin: 12px 0 0; color: #8c3d20; font-size: 12px; line-height: 1.45;
+      }
+      .snapshot-note { margin: 12px 0 0; color: #28705b; font-size: 11px; line-height: 1.45; }
+
+      .trace-result { padding-top: 23px; }
+      .result-heading { justify-content: space-between; gap: 18px; }
+      .result-heading > div:first-child { min-width: 0; }
+      .result-actions { display: flex; align-items: center; gap: 14px; }
+      .route-options-heading {
+        margin: 0 0 5px; color: var(--ink);
+        font: 600 18px/1 "Downlink Display", ui-sans-serif, sans-serif;
+      }
+      .route-pair { margin: 0; color: var(--muted); font-size: 12px; }
+      .route-availability { margin: 12px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+      .fit-button { flex: none; font-size: 12px; }
+      .place-toggle {
+        display: flex; align-items: center; gap: 7px; color: #315878;
+        font-size: 12px; cursor: pointer; white-space: nowrap;
+      }
+      .place-toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--ink); }
+      .trace-empty { margin: 24px 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+      .route-options { display: grid; gap: 9px; margin-top: 17px; }
+      .route-card {
+        --route-color: #ed542d;
+        display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 14px;
+        width: 100%; min-height: 92px; padding: 0 15px 0 0; overflow: hidden;
+        color: var(--ink); background: rgba(255, 255, 255, .58);
+        border: 1px solid #bac8ce;
+        border-radius: 9px; text-align: left; cursor: pointer;
+        opacity: .8; transition: opacity 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+      }
+      .route-card:hover { opacity: 1; transform: translateX(2px); }
+      .route-card.active {
+        opacity: 1; border-color: var(--route-color); background: #fff;
+      }
+      .route-number {
+        align-self: stretch; display: grid; place-items: center;
+        color: #fff; background: var(--route-color);
+        font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums;
+      }
+      .route-card-body { align-self: center; min-width: 0; padding: 12px 0; }
+      .route-card-top { justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+      .route-card-top > span:first-child {
+        color: var(--route-color); font-size: 10px; font-weight: 800;
+        letter-spacing: .12em; text-transform: uppercase;
+      }
+      .selected-label {
+        color: var(--route-color); font-size: 9px; font-weight: 800;
+        letter-spacing: .08em; text-transform: uppercase;
+      }
+      .route-card strong {
+        display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+        font: 600 17px/1.18 "Downlink Display", ui-sans-serif, sans-serif;
+      }
+      .route-metrics { gap: 15px; margin-top: 8px; color: var(--muted); font-size: 11px; }
+      .route-metrics span + span { padding-left: 15px; border-left: 1px solid var(--hairline); }
+
+      .route-detail { margin-top: 16px; padding: 14px 0 16px; border-block: 1px solid var(--hairline); }
+      .route-detail dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0; }
+      .route-detail dt { color: var(--muted); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+      .route-detail dd { margin: 4px 0 0; color: var(--ink); font-size: 13px; font-weight: 750; }
+      .infrastructure { margin: 13px 0 0; color: #3f5c72; font-size: 11px; line-height: 1.5; }
+      .infrastructure span { display: block; margin-bottom: 3px; color: var(--ink); font-weight: 750; }
+      .route-stops { margin-top: 14px; color: #405b72; font-size: 11px; }
+      .route-stops summary { color: var(--ink); font-weight: 750; cursor: pointer; }
+      .route-stops ol { margin: 10px 0 0; padding-left: 28px; line-height: 1.55; }
+      .route-stops li { padding-left: 3px; }
+
+      .panel-footer { margin-top: auto; padding-top: 20px; }
+      .infrastructure-legend { display: grid; gap: 10px; color: #334f67; font-size: 11px; }
+      .infrastructure-legend > div { display: flex; align-items: center; gap: 11px; }
+      .legend-stroke { display: inline-block; flex: none; width: 40px; height: 0; border-top: 3px solid var(--ink); }
+      .legend-stroke.dashed { border-top-style: dashed; }
+      .panel-footer p { margin: 14px 0 0; color: #6b7f8f; font-size: 10px; line-height: 1.5; }
+      .live-button { display: inline-block; margin-top: 12px; }
+
+      .atlas-panel, .data-panel { padding-top: 28px; }
+      .panel-heading h2 {
+        margin: 0; font: 600 23px/1.1 "Downlink Display", ui-sans-serif, sans-serif;
+        letter-spacing: .02em;
+      }
+      .panel-heading p { margin: 9px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+      .atlas-counts {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+        margin: 22px 0 0; overflow: hidden; border: 1px solid var(--hairline); border-radius: 10px;
+      }
+      .atlas-counts div { padding: 12px 9px; background: #fff; text-align: center; }
+      .atlas-counts dt { min-height: 24px; color: var(--muted); font-size: 9px; line-height: 1.25; text-transform: uppercase; }
+      .atlas-counts dd { margin: 5px 0 0; font: 600 21px/1 "Downlink Display", ui-sans-serif, sans-serif; }
+      .cable-search { margin-top: 24px; }
+      .cable-search > label, .layer-controls legend {
+        color: #405b72; font-size: 10px; font-weight: 800;
+        letter-spacing: .12em; text-transform: uppercase;
+      }
+      .cable-search > div { display: grid; grid-template-columns: 1fr auto; margin-top: 8px; }
+      .cable-search input {
+        min-width: 0; height: 46px; padding: 0 12px; color: var(--ink); background: #fff;
+        border: 1px solid #aebfc7; border-right: 0; border-radius: 8px 0 0 8px; font: inherit;
+      }
+      .cable-search button {
+        min-width: 74px; padding: 0 14px; color: #fff; background: var(--ink);
+        border: 1px solid var(--ink); border-radius: 0 8px 8px 0; font-weight: 750; cursor: pointer;
+      }
+      .selected-cable {
+        margin-top: 16px; padding: 14px; background: #fff; border-radius: 10px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, .1);
+      }
+      .selected-cable span { display: block; color: var(--muted); font-size: 9px; text-transform: uppercase; }
+      .selected-cable strong { display: block; margin-top: 5px; font-size: 14px; }
+      .selected-cable button { margin-top: 10px; }
+      .layer-controls { display: grid; gap: 11px; margin: 22px 0 0; padding: 0; border: 0; }
+      .layer-controls legend { margin-bottom: 12px; }
+      .layer-controls label { display: flex; align-items: center; gap: 9px; color: #334f67; font-size: 12px; }
+      .layer-controls input { width: 17px; height: 17px; margin: 0; accent-color: var(--ink); }
+      .atlas-note, .data-date { margin: 24px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+      .data-ledger { margin: 22px 0 0; }
+      .data-ledger div { padding: 14px 0; border-top: 1px solid var(--hairline); }
+      .data-ledger dt { color: var(--muted); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+      .data-ledger dd { margin: 5px 0 0; font-size: 16px; font-weight: 800; }
+      .data-ledger a { color: var(--ink); text-underline-offset: 3px; }
+      .data-ledger p { margin: 5px 0 0; color: #526a7b; font-size: 11px; line-height: 1.45; }
+
+      .map-route-badge {
+        --route-color: #ed542d;
+        display: flex; align-items: stretch; max-width: 230px;
+        transform: translate(-50%, -50%); overflow: hidden;
+        color: var(--ink); background: rgba(250, 249, 244, .95);
+        border: 2px solid rgba(250, 249, 244, .96); border-radius: 7px;
+        box-shadow: 0 3px 9px rgba(0, 0, 0, .2); opacity: .72;
+        font: 750 10px/1.1 ui-sans-serif, sans-serif;
+      }
+      .map-route-badge span { display: grid; flex: none; place-items: center; width: 27px; min-height: 25px; color: #fff; background: var(--route-color); font-size: 12px; }
+      .map-route-badge strong { overflow: hidden; padding: 7px 8px; text-overflow: ellipsis; white-space: nowrap; }
+      .map-route-badge.active { z-index: 2; max-width: 280px; opacity: 1; }
+      .route-place-label {
+        display: flex; align-items: center; gap: 5px; padding: 3px 6px 3px 3px;
+        color: var(--ink); background: rgba(250, 249, 244, .96);
+        border: 1px solid rgba(12, 39, 71, .2); border-radius: 4px;
+        box-shadow: 0 2px 7px rgba(0, 0, 0, .12);
+        font: 700 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+        white-space: nowrap;
+      }
+      .route-place-label span {
+        display: grid; place-items: center; min-width: 16px; height: 16px; padding: 0 3px;
+        color: #fff; background: var(--ink); border-radius: 3px; font: 800 9px/1 ui-sans-serif, sans-serif;
+      }
+      .continent-label {
+        position: absolute; transform: translate(-50%, -50%); color: rgba(12, 39, 71, .38);
+        font: 600 clamp(13px, 1.35vw, 22px)/1 "Downlink Display", ui-sans-serif, sans-serif;
+        letter-spacing: .13em; text-transform: uppercase; white-space: nowrap;
+        text-shadow: 0 1px 0 rgba(250, 249, 244, .8);
+      }
+      .hud { left: calc(var(--panel-width) + 14px); }
+
+      body .maplibregl-ctrl-bottom-right { right: 18px; bottom: 18px; }
+      body .maplibregl-ctrl-group {
+        overflow: hidden; background: rgba(250, 249, 244, .97);
+        border: 1px solid rgba(12, 39, 71, .22); border-radius: 8px;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, .14);
+      }
+      body .maplibregl-ctrl-group button { width: 42px; height: 42px; }
+      body .maplibregl-ctrl-group button + button { border-top: 1px solid rgba(12, 39, 71, .16); }
+      body .maplibregl-ctrl button .maplibregl-ctrl-icon {
+        filter: invert(13%) sepia(33%) saturate(2252%) hue-rotate(177deg) brightness(87%);
+      }
+      body .maplibregl-ctrl-scale {
+        color: var(--ink); background: rgba(250, 249, 244, .9);
+        border-color: var(--ink); font-size: 10px;
+      }
+
+      @keyframes dl-label {
+        0% { opacity: 0; } 8%, 70% { opacity: 1; } 100% { opacity: 0; }
+      }
+      @keyframes dl-ping {
+        0% { transform: scale(.4); opacity: .9; }
+        100% { transform: scale(3.2); opacity: 0; }
+      }
+
+      @media (max-width: 1080px) {
+        :root { --panel-width: 0px; }
+        .trace-panel {
+          inset: auto 0 0; width: 100%; height: min(60vh, 620px); height: min(60dvh, 620px);
+          padding: 18px max(18px, env(safe-area-inset-right))
+            max(16px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+          overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+          border: 0; border-top: 1px solid rgba(12, 39, 71, .2);
+          border-radius: 18px 18px 0 0; box-shadow: 0 -12px 30px rgba(0, 0, 0, .12);
+        }
+        .brand-mark { width: 34px; height: 34px; }
+        .brand-lockup h1 { font-size: 20px; }
+        .brand-lockup p { display: none; }
+        .workspace-tabs { margin-top: 14px; }
+        .workspace-tabs button { min-height: 40px; font-size: 10px; }
+        .trace-form { margin-top: 16px; padding-bottom: 16px; }
+        .city-fields { grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr); align-items: end; gap: 8px; }
+        .city-fields select { font-size: 16px; }
+        .swap {
+          justify-self: stretch; justify-content: center; width: 44px; height: 48px;
+          min-height: 44px; overflow: hidden; font-size: 0;
+        }
+        .swap .button-icon { width: 21px; height: 21px; }
+        .trace-result { padding-top: 16px; }
+        .route-options { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+        .route-card { grid-template-columns: 38px minmax(0, 1fr); min-height: 76px; gap: 8px; padding-right: 8px; }
+        .route-number { font-size: 20px; }
+        .route-card strong { font-size: 11px; -webkit-line-clamp: 2; }
+        .route-card-top > span:first-child { font-size: 8px; }
+        .selected-label, .route-metrics span:nth-child(2) { display: none; }
+        .route-metrics { margin-top: 5px; font-size: 9px; }
+        .route-detail { display: none; }
+        .panel-footer { margin-top: 14px; padding-top: 0; }
+        .panel-footer p { display: none; }
+        .atlas-panel, .data-panel { padding-top: 18px; }
+        .data-ledger { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 18px; }
+        .infrastructure-legend { grid-template-columns: 1fr 1fr; font-size: 9px; gap: 8px; }
+        .legend-stroke { width: 28px; }
+        .intro, .legend, .hud { display: none; }
+        body .maplibregl-ctrl-bottom-right {
+          right: max(12px, env(safe-area-inset-right));
+          bottom: calc(min(60vh, 620px) + 14px);
+          bottom: calc(min(60dvh, 620px) + 14px);
+        }
+        body .maplibregl-ctrl-group button { width: 44px; height: 44px; }
+      }
+
+      @media (max-width: 640px) {
+        .trace-panel { height: min(64vh, 560px); height: min(64dvh, 560px); padding-top: 16px; }
+        .trace-button { margin-top: 10px; }
+        .route-pair { max-width: 28ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .result-actions { gap: 10px; }
+        .place-toggle, .fit-button { min-height: 44px; }
+        .route-options {
+          display: flex; overflow-x: auto; scroll-snap-type: x proximity;
+          scrollbar-width: thin; padding-bottom: 5px;
+        }
+        .route-card {
+          flex: 0 0 min(78vw, 300px); grid-template-columns: 46px minmax(0, 1fr);
+          min-height: 86px; gap: 10px; padding-right: 11px; scroll-snap-align: start;
+        }
+        .route-number { font-size: 24px; }
+        .route-card strong { font-size: 15px; }
+        .route-card-top > span:first-child { font-size: 9px; }
+        .route-metrics { font-size: 10px; }
+        .route-metrics span:nth-child(2) { display: inline; }
+        .infrastructure-legend { grid-template-columns: 1fr; }
+        .route-place-label { max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+        .map-route-badge { max-width: 170px; }
+        body .maplibregl-ctrl-bottom-right {
+          bottom: calc(min(64vh, 560px) + 12px);
+          bottom: calc(min(64dvh, 560px) + 12px);
+        }
+      }
+
+      @media (pointer: coarse) {
+        .text-button, .fit-button, .place-toggle { min-height: 44px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      THESIS: A working cable-laying chart table puts route comparison beside the map and refuses the usual dark monitoring-dashboard overlay.
+      OWN-WORLD: Mineral-blue sea, chalk land, navy instrument type, hairline chart rules, and vermilion/cobalt/sea-green route marks.
+      STORY: Choose two cities, compare three plausible infrastructures, follow the selected signal, and understand exactly which spans are mapped or modeled.
+      FIRST VIEWPORT: A 32% fixed planning ledger sits left; a 68% interactive route map dominates right; the trace action follows the city controls and all candidates remain visible.
+      FORM: Split chart-table workspace, third of three compositional probes; seed 666cb2a7.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+    -->
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+rtt dst=1.1.1.1 rtt_us=12000
+rtt dst=8.8.8.8 rtt_us=24000
+rtt dst=151.101.1.140 rtt_us=38000
+rtt dst=13.107.42.14 rtt_us=89000
+rtt dst=104.244.42.1 rtt_us=147000
+rtt dst=203.0.113.7 rtt_us=210000
+rtt dst=8.8.8.8 rtt_us=31000
+vol dst=1.1.1.1 bytes=216
+vol dst=8.8.8.8 bytes=3942
+vol dst=13.107.42.14 bytes=108
+vol dst=104.244.42.1 bytes=108
+vol dst=151.101.1.140 bytes=108
+vol dst=192.0.2.55 bytes=108
+vol dst=198.51.100.9 bytes=54
+vol dst=203.0.113.7 bytes=108
+stat pkts=24 ipv4_tcp=19 ipv6_skipped=2 ipv6_bytes=148 quic_pkts=3 quic_bytes=3726 rtt_emitted=7 rate_limited=1 rb_dropped=0 syn_tracked=10

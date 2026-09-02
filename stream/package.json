@@ -1,0 +1,17 @@
+{
+  "name": "downlink-stream",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22 <23" },
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "loadtest": "node dist/loadtest.js"
+  },
+  "dependencies": { "ws": "8.21.3" },
+  "devDependencies": {
+    "typescript": "5.6.3",
+    "@types/node": "22.7.5",
+    "@types/ws": "8.5.12"
+  }
+}

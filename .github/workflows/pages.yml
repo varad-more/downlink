@@ -1,0 +1,59 @@
+# Publishes the Phase 4 kiosk to GitHub Pages as a self-driving demo.
+#
+# What is published: phase4/dist only -- the React/deck.gl/MapLibre bundle
+# plus the Natural Earth 110m coastline (public domain).
+#
+# The interactive route explorer uses a checked-in snapshot of all supported
+# city pairs. PostGIS is needed only to refresh that snapshot; Pages does not
+# need a database or API. Live traffic stays synthetic on Pages because the
+# eBPF tap and WebSocket stream are local services.
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["phase4/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel a half-finished deploy; queue behind it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: phase4/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: phase4
+      - run: npx tsc -b && npx vite build
+        working-directory: phase4
+        env:
+          VITE_STATIC_ROUTES: "1"
+      # vite base is "./", so dist is path-agnostic: the same output serves
+      # from "/" (the nginx kiosk image) and from "/<repo>/" (a Pages
+      # project site) with no rebuild.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: phase4/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

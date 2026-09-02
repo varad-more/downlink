@@ -1,0 +1,9 @@
+.env
+.DS_Store
+tap/downlink-tap
+tap/downlink.skel.h
+tap/src/*.o
+data/
+node_modules/
+dist/
+*.tsbuildinfo
