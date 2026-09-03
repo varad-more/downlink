@@ -14,7 +14,6 @@
   "dependencies": {
     "@deck.gl/core": "9.0.35",
     "@deck.gl/extensions": "9.0.35",
-    "@deck.gl/geo-layers": "9.0.35",
     "@deck.gl/layers": "9.0.35",
     "@deck.gl/mapbox": "9.0.35",
     "maplibre-gl": "4.7.1",
@@ -27,19 +26,5 @@
     "@vitejs/plugin-react": "4.3.3",
     "typescript": "5.6.3",
     "vite": "5.4.10"
-  },
-  "overrides": {
-    "@deck.gl/core": "9.0.35",
-    "@deck.gl/layers": "9.0.35",
-    "@deck.gl/geo-layers": "9.0.35",
-    "@deck.gl/mesh-layers": "9.0.35",
-    "@deck.gl/aggregation-layers": "9.0.35",
-    "@deck.gl/extensions": "9.0.35",
-    "@deck.gl/widgets": "9.0.35",
-    "@luma.gl/core": "9.0.28",
-    "@luma.gl/engine": "9.0.28",
-    "@luma.gl/shadertools": "9.0.28",
-    "@luma.gl/webgl": "9.0.28",
-    "@luma.gl/constants": "9.0.28"
   }
 }

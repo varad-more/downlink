@@ -37,6 +37,8 @@ jobs:
           cache-dependency-path: phase4/package-lock.json
       - run: npm ci --no-audit --no-fund
         working-directory: phase4
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: phase4
       - run: npx tsc -b && npx vite build
         working-directory: phase4
         env:
