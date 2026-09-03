@@ -2,7 +2,9 @@
   "version": 8,
   "name": "downlink-chart",
   "sources": {
-    "land": { "type": "geojson", "data": "basemap/ne_110m_land.geojson" },
+    "land": { "type": "geojson", "data": "basemap/ne_50m_land.geojson" },
+    "lakes": { "type": "geojson", "data": "basemap/ne_50m_lakes.geojson" },
+    "boundaries": { "type": "geojson", "data": "basemap/ne_50m_admin_0_boundary_lines_land.geojson" },
     "grid": { "type": "geojson", "data": "basemap/graticule.geojson" }
   },
   "layers": [
@@ -14,6 +16,15 @@
 
     { "id": "land", "type": "fill", "source": "land",
       "paint": { "fill-color": "#f4f1e8" } },
+
+    { "id": "lakes", "type": "fill", "source": "lakes",
+      "paint": { "fill-color": "#d9edf5", "fill-opacity": 0.92 } },
+
+    { "id": "country-boundaries", "type": "line", "source": "boundaries",
+      "paint": {
+        "line-color": "#aebdc0",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.35, 5, 0.9],
+        "line-opacity": 0.72 } },
 
     { "id": "coast-casing", "type": "line", "source": "land",
       "paint": {

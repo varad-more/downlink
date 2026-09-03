@@ -7,6 +7,7 @@ import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { PathStyleExtension } from "@deck.gl/extensions";
 import { TripStore, TRAIL_MS, type Method } from "./trips.ts";
 import { gcArc, isPathEndpoint, unwrapPath } from "./geo.ts";
+import { placeLabel, type LabelBox } from "./labels.ts";
 import * as ks from "./keystone.ts";
 import {
   ROUTE_COLORS, TracePanel, type City, type NetworkSummary,
@@ -595,17 +596,30 @@ export default function App() {
     return { point: map.project([path[anchor]!, path[anchor + 1]!]),
       label: manual.routeLabels[index]! };
   }) : [];
-  const placeLabels: { place: RoutePlace; x: number; y: number }[] = [];
+  const placeLabels: { place: RoutePlace; anchorX: number; anchorY: number;
+    x: number; y: number; width: number }[] = [];
   if (map && manual && showPlaces) {
-    const boxes: [number, number, number, number][] = [];
+    const panel = document.querySelector<HTMLElement>(".trace-panel")?.getBoundingClientRect();
+    const bounds: LabelBox = innerWidth <= 1080
+      ? [8, 8, innerWidth - 8, (panel?.top ?? innerHeight) - 8]
+      : [(panel?.right ?? innerWidth * .32) + 8, 8, innerWidth - 8, innerHeight - 8];
+    const boxes: LabelBox[] = [];
+    const activeBadge = routeAnchors[manual.active];
+    if (activeBadge) {
+      const width = Math.min(430, innerWidth * .5);
+      const charsPerLine = Math.max(22, Math.floor((width - 48) / 6));
+      const height = 16 + Math.ceil(activeBadge.label.length / charsPerLine) * 13;
+      const centerY = activeBadge.point.y + (manual.active - 1) * 27;
+      boxes.push([activeBadge.point.x - width / 2, centerY - height / 2,
+        activeBadge.point.x + width / 2, centerY + height / 2]);
+    }
     for (const place of manual.places.filter((item) => item.routeIndex === manual.active)) {
       const point = map.project(place.position);
-      const box: [number, number, number, number] = [
-        point.x + 7, point.y - 18, point.x + Math.min(230, place.label.length * 7 + 36), point.y + 8,
-      ];
-      if (boxes.some((other) => box[0] < other[2] && box[2] > other[0] &&
-          box[1] < other[3] && box[3] > other[1])) continue;
-      boxes.push(box); placeLabels.push({ place, x: point.x, y: point.y });
+      const width = Math.min(innerWidth <= 640 ? 150 : 230,
+        Math.max(90, place.label.length * 6.4 + 34));
+      const box = placeLabel([point.x, point.y], [width, 24], boxes, bounds);
+      placeLabels.push({ place, anchorX: point.x, anchorY: point.y,
+        x: box[0], y: box[1], width });
     }
   }
   const continentAnchors = map && mode !== "routes" ? CONTINENTS.map((continent) => {
@@ -694,7 +708,8 @@ export default function App() {
       solidLines: lines.filter((line) => line.kind === "submarine"),
       dashedLines: lines.filter((line) => line.kind !== "submarine"),
       landings, places,
-      routeLabels: routes.map((candidate) => candidate.name.replace(/^via /, "")),
+      routeLabels: routes.map((candidate) => candidate.cables.length
+        ? candidate.cables.join(" → ") : candidate.name.replace(/^via /, "")),
     };
     setLabels([]); setTraceTick((tick) => tick + 1); focusRoutes();
   };
@@ -721,11 +736,14 @@ export default function App() {
             name={manual.from.name} kind="SOURCE" />}
           {manual && toPoint && <CityDot x={toPoint.x} y={toPoint.y}
             name={manual.to.name} kind="DESTINATION" />}
-          {manual && routeAnchors.map(({ point, label }, index) => <RouteBadge
-            key={index} x={point.x} y={point.y + (index - 1) * 27} index={index}
-            active={index === manual.active} label={label} />)}
-          {placeLabels.map(({ place, x, y }) => <RoutePlaceLabel
-            key={`${place.routeIndex}-${place.label}`} x={x} y={y}
+          {manual && routeAnchors.map(({ point, label }, index) =>
+            (!showPlaces || index === manual.active) && <RouteBadge
+              key={index} x={point.x} y={point.y + (index - 1) * 27} index={index}
+              active={index === manual.active} label={label} />)}
+          {placeLabels.map(({ place, anchorX, anchorY, x, y, width }) => <RoutePlaceLabel
+            key={`${place.routeIndex}-${place.label}`} anchorX={anchorX} anchorY={anchorY}
+            x={x} y={y} width={width}
+            color={ROUTE_COLORS[manual!.active]!.css}
             label={place.label} order={place.order} />)}
           {continentAnchors.map(({ name, point }) => <div key={name}
             className="continent-label" style={{ left: point.x, top: point.y }}>{name}</div>)}
@@ -806,12 +824,24 @@ function RouteBadge({ x, y, index, active, label }: {
   } as React.CSSProperties}><span>{index + 1}</span><strong>{label}</strong></div>;
 }
 
-function RoutePlaceLabel({ x, y, label, order }: {
-  x: number; y: number; label: string; order: number;
+function RoutePlaceLabel({ anchorX, anchorY, x, y, width, color, label, order }: {
+  anchorX: number; anchorY: number; x: number; y: number; width: number;
+  color: string; label: string; order: number;
 }) {
-  return <div style={{ position: "absolute", left: x + 7, top: y - 7 }}>
-    <div className="route-place-label"><span>{order}</span>{label}</div>
-  </div>;
+  const targetX = Math.max(x, Math.min(anchorX, x + width));
+  const targetY = Math.max(y, Math.min(anchorY, y + 24));
+  const dx = targetX - anchorX, dy = targetY - anchorY;
+  return <>
+    <i className="route-place-leader" style={{ left: anchorX, top: anchorY,
+      width: Math.hypot(dx, dy), transform: `rotate(${Math.atan2(dy, dx)}rad)` }} />
+    <i className="route-place-anchor" style={{ left: anchorX, top: anchorY }} />
+    <div className="route-place-callout" style={{
+      position: "absolute", left: x, top: y, width,
+      "--route-color": color, animationDelay: `${Math.min(order * 18, 180)}ms`,
+    } as React.CSSProperties}>
+      <div className="route-place-label"><span>{order}</span><strong>{label}</strong></div>
+    </div>
+  </>;
 }
 
 function LabelDot({ label, x, y }: { label: Label; x: number; y: number }) {
@@ -926,7 +956,7 @@ function Hud({ hud, calibrating, exploring }: {
         </div>
       </>}
       <div style={{ opacity: 0.65, marginTop: 3 }}>
-        paths are inference, not measurement · coastlines Natural Earth (public domain)
+        paths are inference, not measurement · basemap Natural Earth (public domain)
         {SOAK && !exploring ? "" : " · cables © TeleGeography CC BY-SA 4.0"}
       </div>
       {calibrating && (

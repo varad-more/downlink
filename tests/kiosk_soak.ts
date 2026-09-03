@@ -15,11 +15,20 @@
  */
 import { TripStore, TRAIL_MS } from "../phase4/src/trips.ts";
 import { gcArc, isPathEndpoint, unwrapPath } from "../phase4/src/geo.ts";
+import { placeLabel, type LabelBox } from "../phase4/src/labels.ts";
 
 let failures = 0;
 const check = (ok: boolean, msg: string) => {
   if (!ok) { failures++; console.log("  FAIL " + msg); }
 };
+
+const boxes: LabelBox[] = [];
+for (let i = 0; i < 12; i++) placeLabel([160, 150], [140, 24], boxes, [0, 0, 320, 300]);
+check(boxes.every((box) => box[0] >= 0 && box[1] >= 0 && box[2] <= 320 && box[3] <= 300),
+      "route-place label escaped the visible map area");
+check(boxes.every((box, i) => boxes.slice(i + 1).every((other) =>
+  box[2] <= other[0] || box[0] >= other[2] || box[3] <= other[1] || box[1] >= other[3])),
+  "dense route-place labels overlap or disappear");
 
 // ---------------------------------------------------------------- 1. soak
 

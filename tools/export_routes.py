@@ -5,6 +5,8 @@ import concurrent.futures
 import datetime
 import json
 import pathlib
+import time
+import urllib.error
 import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -16,8 +18,17 @@ def fetch(url, source, destination):
     body = json.dumps({"source": source, "destination": destination}).encode()
     request = urllib.request.Request(
         url, data=body, headers={"content-type": "application/json"})
-    with urllib.request.urlopen(request, timeout=90) as response:
-        route = json.load(response)
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request, timeout=90) as response:
+                route = json.load(response)
+            break
+        except urllib.error.HTTPError as error:
+            detail = error.read().decode(errors="replace")
+            if error.code < 500 or attempt == 2:
+                raise RuntimeError(
+                    f"{source['id']}:{destination['id']}: HTTP {error.code} {detail}") from error
+            time.sleep(attempt + 1)
     if route.get("source", {}).get("name") != source["name"] or not route.get("path"):
         raise ValueError(f"invalid route response for {source['id']}:{destination['id']}")
     return f"{source['id']}:{destination['id']}", route
@@ -40,7 +51,7 @@ def main():
             source_id, destination_id = key.split(":", 1)
             routes[source_id][destination_id] = route
             if count % 40 == 0 or count == len(jobs):
-                print(f"exported {count}/{len(jobs)} routes")
+                print(f"exported {count}/{len(jobs)} routes", flush=True)
 
     metadata = {
         "schema": 1,

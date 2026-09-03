@@ -64,6 +64,10 @@ trunks = {max((segment for segment in route["segments"]
           for route in sf_tokyo}
 assert len(sf_tokyo) >= 2 and len(trunks) >= 2, \
     "San Francisco-to-Tokyo must expose distinct Pacific cable crossings"
+assert routes["mexico-city:taipei"]["method"] == "route", \
+    "connected cities must not snap to isolated cable fragments"
+assert routes["san-francisco:san-jose"]["method"] == "route", \
+    "nearby cities sharing one graph entry still need a modeled land route"
 
 network = json.load(open("phase4/public/network.json"))
 assert network.get("schema") == 1, "network snapshot schema changed"

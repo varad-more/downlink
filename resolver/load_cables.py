@@ -67,7 +67,7 @@ def main():
         land_path = os.environ.get(
             "DOWNLINK_LAND_GEOJSON",
             os.path.join(HERE, "..", "phase4", "public", "basemap",
-                         "ne_110m_land.geojson"))
+                         "ne_50m_land.geojson"))
         cur.execute("TRUNCATE land RESTART IDENTITY CASCADE")
         n_land = 0
         if os.path.exists(land_path):

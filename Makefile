@@ -1,5 +1,5 @@
 .PHONY: help build sample-pcap verify-phase1 run clean pin-base probe \
-	fetch-data load-topo snapshot-routes verify-phase2 verify-phase3 verify-phase4 \
+	fetch-data fetch-basemap load-topo snapshot-routes verify-phase2 verify-phase3 verify-phase4 \
 	snapshot-network verify-all up kiosk dev
 
 help:
@@ -10,6 +10,7 @@ help:
 	@echo "make probe          print the kernel feature probes the VERIFY notes ask for"
 	@echo "make pin-base       print the base-image digest to pin in tap/Dockerfile"
 	@echo "make fetch-data     download cable + landing point GeoJSON into data/"
+	@echo "make fetch-basemap  refresh pinned Natural Earth 1:50m map geometry"
 	@echo "make load-topo      load cables into PostGIS and build the routable graph"
 	@echo "make verify-phase2  Phase 2 gate (20 fixture destinations)"
 	@echo "make verify-phase3  Phase 3 gate (10 min load test, 500 events/sec)"
@@ -61,6 +62,13 @@ fetch-data:
 	@printf 'TeleGeography submarine cable map, CC BY-SA 4.0\n%s/cable/cable-geo.json\n%s/landing-point/landing-point-geo.json\nretrieved: %s\n' \
 		"$(TG_BASE)" "$(TG_BASE)" "$$(date -u +%Y-%m-%dT%H:%M:%SZ)" > data/SOURCES.md
 	@cat data/SOURCES.md
+
+NE_REV := ca96624a56bd078437bca8184e78163e5039ad19
+NE_GEOJSON := https://raw.githubusercontent.com/nvkelso/natural-earth-vector/$(NE_REV)/geojson
+fetch-basemap:
+	curl -sSLf -o phase4/public/basemap/ne_50m_land.geojson "$(NE_GEOJSON)/ne_50m_land.geojson"
+	curl -sSLf -o phase4/public/basemap/ne_50m_lakes.geojson "$(NE_GEOJSON)/ne_50m_lakes.geojson"
+	curl -sSLf -o phase4/public/basemap/ne_50m_admin_0_boundary_lines_land.geojson "$(NE_GEOJSON)/ne_50m_admin_0_boundary_lines_land.geojson"
 
 load-topo:
 	docker compose up -d --build --wait db

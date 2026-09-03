@@ -140,7 +140,7 @@ export function TracePanel({ onTrace, onLive, onFit, showPlaces, onShowPlaces,
   networkLayers: { submarine: boolean; terrestrial: boolean; landings: boolean };
   onNetworkLayers: (next: { submarine: boolean; terrestrial: boolean; landings: boolean }) => void;
 }) {
-  const [fromId, setFromId] = useState("tempe");
+  const [fromId, setFromId] = useState("san-francisco");
   const [toId, setToId] = useState("london");
   const [routes, setRoutes] = useState<TraceCandidate[]>([]);
   const [routeFrom, setRouteFrom] = useState<City | null>(null);
@@ -148,8 +148,6 @@ export function TracePanel({ onTrace, onLive, onFit, showPlaces, onShowPlaces,
   const [active, setActive] = useState(0);
   const [status, setStatus] = useState<"idle" | "loading" | "snapshot" | "fallback">("idle");
   const [error, setError] = useState("");
-  const [cableQuery, setCableQuery] = useState("");
-  const [cableError, setCableError] = useState("");
   const request = useRef<AbortController | null>(null);
   const from = CITIES.find((city) => city.id === fromId)!;
   const to = CITIES.find((city) => city.id === toId)!;
@@ -209,7 +207,7 @@ export function TracePanel({ onTrace, onLive, onFit, showPlaces, onShowPlaces,
   };
 
   useEffect(() => {
-    void findRoutes(CITIES.find((city) => city.id === "tempe")!,
+    void findRoutes(CITIES.find((city) => city.id === "san-francisco")!,
       CITIES.find((city) => city.id === "london")!);
     return () => request.current?.abort();
   }, []);
@@ -233,15 +231,6 @@ export function TracePanel({ onTrace, onLive, onFit, showPlaces, onShowPlaces,
     if (stops.at(-1) !== segment.to) stops.push(segment.to);
     return stops;
   }, []) ?? [];
-  const selectCable = (event: React.FormEvent) => {
-    event.preventDefault();
-    const query = cableQuery.trim().toLocaleLowerCase();
-    const match = network.cableNames.find((name) => name.toLocaleLowerCase() === query) ??
-      network.cableNames.find((name) => name.toLocaleLowerCase().includes(query));
-    if (!query || !match) return setCableError("No mapped cable matches that name.");
-    setCableQuery(match); setCableError(""); onSelectCable(match);
-  };
-
   return (
     <aside className="trace-panel" aria-label="Trace a signal between cities">
       <header className="brand-row">
@@ -376,25 +365,26 @@ export function TracePanel({ onTrace, onLive, onFit, showPlaces, onShowPlaces,
         {!network.loading && !network.error && <>
           <dl className="atlas-counts">
             <div><dt>Cable systems</dt><dd>{network.cables.toLocaleString()}</dd></div>
-            <div><dt>Land links</dt><dd>{network.terrestrial.toLocaleString()}</dd></div>
+            <div><dt>Modeled links</dt><dd>{network.terrestrial.toLocaleString()}</dd></div>
             <div><dt>Landing points</dt><dd>{network.landings.toLocaleString()}</dd></div>
           </dl>
-          <form className="cable-search" onSubmit={selectCable}>
-            <label htmlFor="cable-name">Find a cable system</label>
-            <div><input id="cable-name" list="cable-names" value={cableQuery}
-              onChange={(event) => setCableQuery(event.target.value)}
-              placeholder="e.g. FASTER" autoComplete="off" />
-              <button type="submit">Locate</button></div>
-            <datalist id="cable-names">{network.cableNames.map((name) =>
-              <option key={name} value={name} />)}</datalist>
-            {cableError && <p className="trace-error" role="alert">{cableError}</p>}
-          </form>
-          {selectedCable && <div className="selected-cable">
-            <span>Selected cable</span><strong>{selectedCable}</strong>
-            <button type="button" className="text-button" onClick={() => {
-              setCableQuery(""); setCableError(""); onSelectCable("");
-            }}>Show all systems</button>
-          </div>}
+          <div className="cable-search">
+            <label htmlFor="cable-name">Cable system</label>
+            <div className="cable-select">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.5" />
+                <path d="m15 15 4 4" /></svg>
+              <select id="cable-name" value={selectedCable}
+                aria-describedby="cable-help"
+                onChange={(event) => onSelectCable(event.target.value)}>
+                <option value="">All cable systems</option>
+                {network.cableNames.map((name) => <option key={name}>{name}</option>)}
+              </select>
+              <svg className="select-chevron" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="m4 6 4 4 4-4" />
+              </svg>
+            </div>
+            <p id="cable-help">Choose a system to isolate it on the map.</p>
+          </div>
           <fieldset className="layer-controls"><legend>Visible layers</legend>
             {([['submarine', 'Submarine cables'], ['terrestrial', 'Modeled terrestrial'],
                ['landings', 'Landing points']] as const).map(([key, label]) =>
@@ -404,7 +394,7 @@ export function TracePanel({ onTrace, onLive, onFit, showPlaces, onShowPlaces,
                 })} />{label}</label>)}
           </fieldset>
         </>}
-        <p className="atlas-note">Cable geometry is mapped infrastructure. Land links are modeled connections, not carrier-published fibre routes.</p>
+        <p className="atlas-note">Cable geometry is mapped infrastructure. Land links are generated between 28 metro anchors and nearby landing stations—not a carrier-published fibre inventory.</p>
       </section>}
 
       {mode === "data" && <section id="data-panel" className="data-panel">
@@ -417,12 +407,21 @@ export function TracePanel({ onTrace, onLive, onFit, showPlaces, onShowPlaces,
           <div><dt>Landing points</dt><dd>{network.landings ? network.landings.toLocaleString() : "Loading…"}</dd><p>Published coastal stations in the topology snapshot.</p></div>
           <div><dt>Modeled land links</dt><dd>{network.terrestrial ? network.terrestrial.toLocaleString() : "Loading…"}</dd><p>Distance-weighted metro and landing-station links.</p></div>
           <div><dt>Submarine source</dt><dd><a href="https://www.submarinecablemap.com/" target="_blank" rel="noreferrer">TeleGeography</a></dd><p>Published cable geometry and landing stations.</p></div>
+          <div><dt>Basemap source</dt><dd><a href="https://www.naturalearthdata.com/downloads/50m-physical-vectors/" target="_blank" rel="noreferrer">Natural Earth 1:50m</a></dd><p>Public-domain coastlines, lakes, and country boundaries.</p></div>
           <div><dt>Project source</dt><dd><a href="https://github.com/varad-more/downlink" target="_blank" rel="noreferrer">GitHub</a></dd><p>Open-source application code under the MIT License.</p></div>
           <div><dt>License</dt><dd>CC BY-SA 4.0</dd><p>Applies to the TeleGeography-derived snapshot.</p></div>
           <div><dt>Packet certainty</dt><dd>Candidate only</dd><p>A public trace cannot prove the operator’s physical cable.</p></div>
         </dl>
         {network.generatedAt && <p className="data-date">Atlas generated {new Date(network.generatedAt).toLocaleDateString()}.</p>}
       </section>}
+
+      <footer className="site-footer">
+        <p>Built by <strong>Varad Vitthal More</strong></p>
+        <nav aria-label="Creator links">
+          <a href="https://varadmore.me/" target="_blank" rel="me noreferrer">Portfolio</a>
+          <a href="https://github.com/varad-more/downlink" target="_blank" rel="noreferrer">GitHub source</a>
+        </nav>
+      </footer>
     </aside>
   );
 }

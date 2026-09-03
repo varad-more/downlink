@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS ixps (
     geom  geometry(Point, 4326) NOT NULL
 );
 
--- Natural Earth 110m land polygons (public domain). Used only to decide
+-- Natural Earth 1:50m land polygons (public domain). Used only to decide
 -- whether a proposed terrestrial edge is actually over land.
 CREATE TABLE IF NOT EXISTS land (
     id   serial PRIMARY KEY,

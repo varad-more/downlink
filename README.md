@@ -57,7 +57,7 @@ Replay mode drives a pcap through the same BPF bytecode with
 `topo/` turns TeleGeography cable geometry into a routable PostGIS/pgRouting
 graph:
 
-- Nodes are published landing stations and a small set of metro anchors.
+- Nodes are published landing stations and 28 metro anchors.
 - Submarine edges retain their published cable ID and name.
 - Cable crossings are not connections.
 - Terrestrial edges are explicitly modeled links, never named carrier fibre.
@@ -129,8 +129,8 @@ npm --prefix phase4 install
 make dev
 ```
 
-Open `http://localhost:5173`. The bundled snapshot contains all 930 directed
-pairs between the 31 supported cities.
+Open `http://localhost:5173`. The bundled snapshot contains all 2,756 directed
+pairs between the 53 supported cities.
 
 ## Rebuild the topology or run live traffic
 
@@ -177,10 +177,9 @@ only suitable for tests and demonstrations.
 
 ## Data
 
-`make fetch-data` downloads:
-
-- TeleGeography cable geometry and landing stations, CC BY-SA 4.0.
-- Natural Earth 110m land is checked in and public domain.
+`make fetch-data` downloads TeleGeography cable geometry and landing stations
+under CC BY-SA 4.0. `make fetch-basemap` refreshes the pinned, public-domain
+Natural Earth 1:50m land, lakes, and country boundaries.
 
 Downloaded cable data lives in ignored `data/`; `data/SOURCES.md` records its
 source and retrieval time. The checked-in route snapshot is a derived work and

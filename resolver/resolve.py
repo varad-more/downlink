@@ -79,8 +79,26 @@ SELECT id, name, kind, ST_Y(geom) AS lat, ST_X(geom) AS lon,
        ST_Distance(geom::geography,
                    ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography) / 1000.0 AS km
 FROM nodes
+JOIN dl_routable_nodes USING (id)
 ORDER BY geom <-> ST_SetSRID(ST_MakePoint(%s, %s), 4326)
 LIMIT 1
+"""
+
+_ROUTABLE_NODES = """
+CREATE TEMP TABLE dl_routable_nodes ON COMMIT PRESERVE ROWS AS
+WITH components AS MATERIALIZED (
+  SELECT component, node
+  FROM pgr_connectedComponents(
+    'SELECT id, source, target, cost, reverse_cost FROM edges')
+)
+SELECT node AS id
+FROM components
+WHERE component = (
+  SELECT component FROM components
+  GROUP BY component
+  ORDER BY count(*) DESC
+  LIMIT 1
+)
 """
 
 _NEAREST_WITHIN = """
@@ -119,6 +137,11 @@ class Resolver:
         self.geo = geo
         self.home = (home_lat, home_lon)
         self._home_node = None
+        # The closest node may be an isolated cable fragment. Restrict every
+        # route lookup to the graph's connected global backbone.
+        with self.conn.cursor() as cur:
+            cur.execute(_ROUTABLE_NODES)
+            cur.execute("CREATE UNIQUE INDEX ON dl_routable_nodes (id)")
 
     def _nearest(self, lat, lon):
         with self.conn.cursor() as cur:
@@ -345,9 +368,29 @@ class Resolver:
         sn, dn = self._nearest(sl, so), self._nearest(dl, do)
         snap_km = (sn["km"] if sn else 9e9) + (dn["km"] if dn else 9e9)
         if (not sn or not dn or sn["km"] > SNAP_MAX_KM or
-                dn["km"] > SNAP_MAX_KM or sn["id"] == dn["id"]):
+                dn["km"] > SNAP_MAX_KM):
             return self._between_great_circle(out, sl, so, dl, do,
                                               "no-graph-route")
+
+        if sn["id"] == dn["id"]:
+            path = gc_arc(sl, so, dl, do, n=12)
+            out.update(
+                method="route", reason=None,
+                route_name="modeled terrestrial route", path=path,
+                path_km=round(gc_km, 1),
+                estimated_rtt_ms=round(gc_km * 2 / SOL_KM_PER_MS, 1),
+                confidence=confidence(gc_km, gc_km, gc_km * 2,
+                                      snap_km, 0),
+                segments=[{
+                    "kind": "terrestrial",
+                    "name": "modeled terrestrial connection",
+                    "from": source["name"], "to": destination["name"],
+                    "km": round(gc_km, 1), "path": path,
+                }],
+                cables=[], alternatives=[], entry=sn["name"],
+                exit=dn["name"], snap_km=round(snap_km, 1),
+            )
+            return out
 
         routes = self._routes(sn["id"], dn["id"])
         if not routes:

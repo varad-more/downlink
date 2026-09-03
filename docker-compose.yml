@@ -113,7 +113,7 @@ services:
       PGHOST: db
       PGPASSWORD: ${PGPASSWORD:-downlink}
       DOWNLINK_DATA_DIR: /data
-      DOWNLINK_LAND_GEOJSON: /basemap/ne_110m_land.geojson
+      DOWNLINK_LAND_GEOJSON: /basemap/ne_50m_land.geojson
     volumes:
       - ./tests:/tests:ro
       - ./data:/data:ro
