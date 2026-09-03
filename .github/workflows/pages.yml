@@ -12,7 +12,11 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: ["phase4/**", ".github/workflows/pages.yml"]
+    paths:
+      - "phase4/**"
+      - "tests/verify_phase4.sh"
+      - "tests/kiosk_soak.ts"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -35,14 +39,11 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: phase4/package-lock.json
-      - run: npm ci --no-audit --no-fund
-        working-directory: phase4
-      - run: npm audit --omit=dev --audit-level=high
-        working-directory: phase4
-      - run: npx tsc -b && npx vite build
-        working-directory: phase4
+      - run: ./tests/verify_phase4.sh
         env:
           VITE_STATIC_ROUTES: "1"
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: phase4
       # vite base is "./", so dist is path-agnostic: the same output serves
       # from "/" (the nginx kiosk image) and from "/<repo>/" (a Pages
       # project site) with no rebuild.

@@ -1,4 +1,4 @@
-# Downlink -- Phase 1 (tap only). Phases 2-4 add services to this file.
+# Downlink -- all four phases: tap, topology/resolver, stream, kiosk.
 #
 # Every capability below is load-bearing. Omit one and the failure is an
 # opaque -EPERM or -EINVAL from bpf(2) with no diagnostic:
@@ -83,6 +83,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
+    restart: unless-stopped
     networks: [downlink]
 
   resolver:
@@ -101,6 +102,11 @@ services:
       - ./tests:/tests:ro
       - ./data:/data:ro
     ports: ["127.0.0.1:8081:8081"]
+    # The resolver survives a db restart on its own (server.py evicts the dead
+    # connection and rebuilds), but it cannot survive its own death. Both ends
+    # of that pair need a restart policy or the wall goes dark until a human
+    # runs `make up`.
+    restart: unless-stopped
     networks: [downlink]
 
   # One-shot: load cable data and build the graph. `make load-topo`.

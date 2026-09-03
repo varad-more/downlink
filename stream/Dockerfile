@@ -1,5 +1,6 @@
-# VERIFY: pin to a digest before deployment -- CHECK: make pin-base
-FROM node:22-bookworm-slim
+# Pinned to a multi-arch manifest-list digest, resolved 2026-09-03.
+# Refresh with `make pin-base IMAGE=node:22-bookworm-slim`.
+FROM node@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5
 
 WORKDIR /app
 COPY package.json package-lock.json ./

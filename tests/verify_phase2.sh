@@ -10,6 +10,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Connection pool first: stdlib-only, no Docker, ~1s. If borrow/evict/retry is
+# broken there is no point building an image to find out.
+python3 tests/resolver_pool.py
+
 docker compose build resolver >&2
 docker compose run --rm --no-TTY --entrypoint "" resolver \
     python -u resolve.py /tests/fixture_dests.json 2>/dev/null > /tmp/dl_phase2.jsonl

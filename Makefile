@@ -8,7 +8,7 @@ help:
 	@echo "make verify-phase1  Phase 1 gate (no NIC touched)"
 	@echo "make run            attach to \$$DOWNLINK_WAN_IFACE and stream live"
 	@echo "make probe          print the kernel feature probes the VERIFY notes ask for"
-	@echo "make pin-base       print the base-image digest to pin in tap/Dockerfile"
+	@echo "make pin-base       print a base-image digest to pin  (IMAGE=repo:tag)"
 	@echo "make fetch-data     download cable + landing point GeoJSON into data/"
 	@echo "make fetch-basemap  refresh pinned Natural Earth 1:50m map geometry"
 	@echo "make load-topo      load cables into PostGIS and build the routable graph"
@@ -43,8 +43,12 @@ probe:
 	@echo '--- clsact ---'
 	tc qdisc add dev lo clsact 2>&1 && tc qdisc del dev lo clsact && echo 'clsact: ok'
 
+# Resolve the multi-arch manifest-list digest for a base image, so every
+# FROM in this repo names bytes rather than a tag someone else can move.
+#   make pin-base IMAGE=node:22-bookworm-slim
+IMAGE ?= debian:bookworm-slim
 pin-base:
-	docker buildx imagetools inspect debian:bookworm-slim --format '{{.Manifest.Digest}}'
+	docker buildx imagetools inspect $(IMAGE) --format '{{.Manifest.Digest}}'
 
 clean:
 	docker compose down --remove-orphans
